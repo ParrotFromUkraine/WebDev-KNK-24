@@ -1,0 +1,199 @@
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Личный дневник</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                max-width: 500px;
+                margin: 40px auto;
+                text-align: center;
+                background-color: #121212;
+                color: #ffffff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            }
+            h2 {
+                color: #00bcd4;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            textarea, input, select {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                background-color: #1e1e1e;
+                color: #ffffff;
+                border: 1px solid #444;
+                border-radius: 8px;
+                font-size: 16px;
+            }
+            button {
+                background-color: #00bcd4;
+                color: #ffffff;
+                border: none;
+                padding: 12px 20px;
+                margin: 10px 5px;
+                cursor: pointer;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: 0.3s;
+            }
+            button:hover {
+                background-color: #0097a7;
+            }
+            pre {
+                background-color: #1e1e1e;
+                padding: 12px;
+                border-radius: 8px;
+                text-align: left;
+                white-space: pre-wrap;
+                border: 1px solid #444;
+            }
+            .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="loginScreen">
+            <h2>Введите пароль</h2>
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            <button onclick="checkPassword()">Войти</button>
+            <button onclick="resetPassword()">Забыл пароль</button>
+
+        </div>
+
+        <div id="diaryScreen" class="hidden">
+            <h2>Личный дневник</h2>
+            <label for="date">Дата:</label>
+            <input type="date" id="date">
+            <br>
+            <label for="mood">Оценка дня:</label>
+            <select id="mood">
+                <option value="1">1 - Плохо</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5 - Отлично</option>
+            </select>
+            <br>
+            <textarea id="entry" placeholder="Запишите свой день..."></textarea>
+            <br>
+            <button onclick="saveEntry()">Сохранить</button>
+            <button onclick="loadEntries()">Загрузить</button>
+            <button onclick="deleteEntry()">Удалить запись</button>
+            <button onclick="confirmDeleteAll()">Удалить всё</button>
+            <pre id="output"></pre>
+        </div>
+        <div><a href="https://allcalc.ru/node/1878" data-weight="450px" data-height="400px">Сколько дней осталось до мая - allcalc</a><script src="https://allcalc.ru/widgets/script.js"></script></div>
+
+
+        <script>
+            const PASSWORD = "macProjectByParrot"; // Замените на ваш пароль
+            let inactivityTimer;
+            let passwordAttempts = 0;
+
+            function checkPassword() {
+                const enteredPassword = document.getElementById('passwordInput').value;
+                if (enteredPassword === PASSWORD) {
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('diaryScreen').classList.remove('hidden');
+                    resetInactivityTimer();
+                } else {
+                    alert("Неверный пароль!");
+                }
+            }
+
+            function saveEntry() {
+                resetInactivityTimer();
+                const date = document.getElementById('date').value;
+                const mood = document.getElementById('mood').value;
+                const text = document.getElementById('entry').value;
+                if (!date) {
+                    alert("Выберите дату!");
+                    return;
+                }
+                const entry = { date, mood, text };
+                let entries = JSON.parse(localStorage.getItem('diary')) || [];
+                const existingIndex = entries.findIndex(e => e.date === date);
+                if (existingIndex !== -1) {
+                    entries[existingIndex] = entry;
+                } else {
+                    entries.push(entry);
+                }
+                localStorage.setItem('diary', JSON.stringify(entries));
+                alert("Запись сохранена!");
+                loadEntries();
+            }
+
+            function loadEntries() {
+                resetInactivityTimer();
+                const entries = JSON.parse(localStorage.getItem('diary')) || [];
+                let output = "";
+                entries.reverse().forEach(e => { // Обратный порядок
+                    output += `${e.date} | Оценка: ${e.mood}\n${e.text}\n---\n`;
+                });
+                document.getElementById('output').textContent = output;
+            }
+
+            function deleteEntry() {
+                resetInactivityTimer();
+                const date = document.getElementById('date').value;
+                if (!date) {
+                    alert("Выберите дату записи для удаления!");
+                    return;
+                }
+                let entries = JSON.parse(localStorage.getItem('diary')) || [];
+                entries = entries.filter(e => e.date !== date);
+                localStorage.setItem('diary', JSON.stringify(entries));
+                alert("Запись удалена!");
+                loadEntries();
+            }
+
+            function confirmDeleteAll() {
+                passwordAttempts = 0;
+                askForPassword();
+            }
+
+            function askForPassword() {
+                if (passwordAttempts < 5) {
+                    const enteredPassword = prompt("Введите пароль (попытка " + (passwordAttempts + 1) + " из 5):");
+                    if (enteredPassword === PASSWORD) {
+                        passwordAttempts++;
+                        if (passwordAttempts < 5) {
+                            askForPassword();
+                        } else {
+                            localStorage.removeItem('diary');
+                            alert("Все записи удалены!");
+                            loadEntries();
+                        }
+                    } else {
+                        alert("Неверный пароль!");
+                    }
+                }
+            }
+
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(logout, 5 * 60 * 1000); // 5 минут
+            }
+
+            function logout() {
+                document.getElementById('diaryScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('passwordInput').value = "";
+            }
+
+            document.addEventListener('mousemove', resetInactivityTimer);
+            document.addEventListener('keypress', resetInactivityTimer);
+
+            function resetPassword () { 
+                console.log(PASSWORD)
+            }
+        </script>
+    </body>
+    </html>
