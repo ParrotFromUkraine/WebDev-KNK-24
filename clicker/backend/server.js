@@ -1,38 +1,60 @@
 const express = require("express");
 const cors = require("cors");
+const { encodePassword, generateToken } = require("./utils");
 const app = express();
+const port = 3000;
+
+const users = [];
 
 app.use(cors());
 app.use(express.json());
 
-const users = [];
-
 app.post("/sign-up", (req, res) => {
   const { email, password } = req.body;
 
-  // Validation checks
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+    return res.status(400).json({ error: "Email і пароль абавязковыя" });
   }
 
   if (password.length < 8) {
     return res
       .status(400)
-      .json({ message: "Password should be at least 8 characters long" });
+      .json({ error: "Пароль павінен быць не менш за 8 сімвалаў" });
   }
 
-  // Check if user already exists
   if (users.some((user) => user.email === email)) {
-    return res.status(400).json({ message: "Email already exists" });
+    return res
+      .status(400)
+      .json({ error: "Карыстальнік з такім email ужо існуе" });
   }
 
-  // Create new user with hashed password
   const hashedPassword = encodePassword(password);
   users.push({ email, password: hashedPassword });
 
-  res.status(201).json({ message: "User created successfully" });
+  return res.status(201).json({ message: "Рэгістрацыя паспяховая!" });
 });
 
-app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+app.post("/sign-in", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email і пароль абавязковыя" });
+  }
+
+  const user = users.find((user) => user.email === email);
+  if (!user) {
+    return res.status(401).json({ error: "Карыстальнік не знойдзены" });
+  }
+
+  const hashedPassword = encodePassword(password);
+  if (user.password !== hashedPassword) {
+    return res.status(401).json({ error: "Няправільны пароль" });
+  }
+
+  const token = generateToken(email);
+  return res.status(200).json({ token });
+});
+
+app.listen(port, () => {
+  console.log(`Сервер працуе на http://localhost:${port}`);
 });
