@@ -1,0 +1,17 @@
+{
+  "name": "clicker",
+  "version": "1.0.0",
+  "main": "mainClicker.js",
+  "scripts": {
+    "server": "node backend/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "express": "^5.1.0"
+  }
+}

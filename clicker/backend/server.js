@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const encodePassword = require("./hash").encodePassword;
 const app = express();
 
 app.use(cors());
