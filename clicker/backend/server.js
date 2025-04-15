@@ -1,9 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const { encodePassword, generateToken } = require("./utils");
+
 const app = express();
 const port = 3000;
-
 const users = [];
 
 app.use(cors());

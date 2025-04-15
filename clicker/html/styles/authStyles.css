@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.Sign-Up {
+    font-weight: normal;
+    margin: -4px;
+}
+
+.container {
+    text-align: center;
+    background: #fff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+h1 {
+    font-size: 28.8px;
+    margin-bottom: 16px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: 14.4px;
+    color: #555;
+}
+
+.password-container {
+    position: relative;
+}
+
+input {
+    padding: 12.8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 375px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.toggle-password svg {
+    width: 24px;
+    height: 24px;
+    fill: #afb1b6;
+}
+
+button {
+    background-color: #121212;
+    color: white;
+    padding: 12.8px;
+    font-size: 16px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.signin-link {
+    margin-top: 16px;
+    font-size: 14.4px;
+}
+
+.signin-link a {
+    color: black;
+    text-decoration: none;
+}
+
+.signin-link a:hover {
+    text-decoration: underline;
+}
+
+svg {
+    position: absolute;
+    top: -6px;
+    left: -12px;
+}
