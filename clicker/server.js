@@ -9,9 +9,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-const users = []; // збереження користувачів у памʼяті
+const users = [];
 
-// Реєстрація
 app.post('/sign-up', (req, res) => {
   const { username, password } = req.body;
 
